@@ -16,7 +16,7 @@
 	<td style="width: 20%; border-bottom: 1px solid black;">Date</td>
 	</tr>
 
-	{% for number, message_headers, message in mail %}
+	{% for number, message_headers, message, raw_message in mail %}
 	<tr style="background-color: {% cycle '#cef' '#cdf' %};">
 	<td><!-- select this --></td>
 	<td onclick="toggle_message('{{number}}')" style="color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
