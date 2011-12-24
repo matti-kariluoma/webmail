@@ -16,5 +16,5 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 
    url(r'^$', 'webmail_data.views.login'),
-   url(r'^mail/(?P<folder>[a-z_]+)$', 'webmail_data.views.mail')
+   url(r'^mail/(?P<folder>[a-zA-Z_]+)$', 'webmail_data.views.mail')
 )
