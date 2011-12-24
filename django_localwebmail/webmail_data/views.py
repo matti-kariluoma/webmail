@@ -16,7 +16,7 @@ def login(request):
 		context_instance=RequestContext(request)
 	)
 
-def mail(request):
+def mail(request, folder):
 	if request.method == 'POST':
 		login_form = webmail_forms.LoginForm(request.POST)
 		if login_form.is_valid():
@@ -27,7 +27,7 @@ def mail(request):
 
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			imap.select('INBOX')
+			imap.select(folder)
 			(typ, data) = imap.search(None, 'ALL')
 			for num in data[0].split():
 				(typ, data) = imap.fetch(num, '(RFC822)')
