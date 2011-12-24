@@ -54,7 +54,7 @@ def mail(request, folder):
 
 			sorted_mail = [] # sort by date
 					
-			mail_nums = range(max(mail.keys()))
+			mail_nums = range(max(mail.keys())+1)
 			mail_nums.sort(reverse=True)
 			for i in mail_nums:
 				try:
