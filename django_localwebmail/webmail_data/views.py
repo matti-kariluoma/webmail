@@ -120,7 +120,7 @@ def compose(request, action, folder=None, msg_num=None):
 								for part in multi_payload:
 									if part.is_multipart():
 										msg_parts.insert(0, part) #prepend
-									else
+									else:
 										msg_parts.append(part) 
 							
 							for msg in msg_parts:
