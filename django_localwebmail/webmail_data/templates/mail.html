@@ -17,15 +17,15 @@
 	</tr>
 
 	{% for number, message_headers, message in mail %}
-	<tr>
+	<tr style="background-color: {% cycle '#cef' '#cdf' %};">
 	<td><!-- select this --></td>
-	<td onclick="toggle_message('message_{{number}}')" style="text-color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
+	<td onclick="toggle_message('message_{{number}}')" style="color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
 	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.From }}</td>
 	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.Date }}</td>
 	</tr>
 	
-	<tr id='message_{{number}}' class="message">
-	<td colspan='4'>
+	<tr id='message_{{number}}' class="message" style="background-color: #fdc;">
+	<td colspan='4' style="border: 1px dotted black;">
 		<p>{{ message }}</p>
 	</td>
 	</tr>
