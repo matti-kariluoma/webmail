@@ -3,18 +3,20 @@
 <div class="compose" style="padding: 1em;">
 <form action="/send/" method="POST">
 	{% csrf_token %}
-	{% for field in compose_form %}
-	<div>
-		{{ field.errors }}
-		{{ field.label_tag }}: {{ field }}
-	</div>
-	{% endfor %}
-	{% for field in login_form %}
-	<div>
-		{{ field.errors }}
-		{{ field.label_tag }}: {{ field }}
-	</div>
-	{% endfor %}
+	<table>
+		{% for field in compose_form %}
+		<tr>
+			<td>{{ field.errors }} {{ field.label_tag }}: </td>
+			<td>{{ field }}</td>
+		</tr>
+		{% endfor %}
+		{% for field in login_form %}
+		<tr>		
+			<td>{{ field.errors }} {{ field.label_tag }}: </td>
+			<td>{{ field }}</td>
+		</tr>
+		{% endfor %}
+	</table>
 	<input type="submit" value="Send">
 </form>
 </div>
