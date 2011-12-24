@@ -76,61 +76,55 @@ def mail(request, folder):
 		
 def compose(request, action, folder=None, msg_num=None):
 	if request.method == 'POST':
-		login_form = webmail_forms.LoginForm(request.POST)
-		if login_form.is_valid():
-			username = login_form.cleaned_data['name']
-			password = login_form.cleaned_data['password']
-			
 			to = ''
 			cc = ''
 			bcc = ''
 			subject = ''
 			quoted_message = ''
+			login_form = webmail_forms.LoginForm(request.POST)
 			
 			if action is not 'new':
+				
 				if folder is None or msg_num is None:
-					return render_to_response(
-						'mail.html',
-						{
-							'login_form': login_form,
-							'mail': sorted_mail,
-							'folder': folder,
-						},
-						context_instance=RequestContext(request)
-					)
-
-				imap = imaplib.IMAP4() # localhost, port 143
-				imap.login(username, password)
-				imap.select(folder)
-				(typ, data) = imap.fetch(str(msg_num), '(RFC822)')
-				for response_part in data:
-					if isinstance(response_part, tuple):
-						msg = email.message_from_string(response_part[1])
-						quoted_message += 'On %s, %s wrote:\r\n'% (msg['date'], msg['from'])
-						to = msg['from']
-						cc = msg['from']
-						subject = 'Re: %s' % (msg['subject'])
-						#subject = 'Fwd: %s' % (msg['subject'])
-						
-						if msg.is_multipart():
-							msg_parts = [msg]
-							while msg_parts[0].is_multipart():
-								multi_payload = msg_parts[0].get_payload()
-								del msg_parts[0]
-								for part in multi_payload:
-									if part.is_multipart():
-										msg_parts.insert(0, part) #prepend
-									else:
-										msg_parts.append(part) 
+					return mail(request, folder)
+				
+				if login_form.is_valid():
+					username = login_form.cleaned_data['name']
+					password = login_form.cleaned_data['password']
+					
+					imap = imaplib.IMAP4() # localhost, port 143
+					imap.login(username, password)
+					imap.select(folder)
+					(typ, data) = imap.fetch(str(msg_num), '(RFC822)')
+					for response_part in data:
+						if isinstance(response_part, tuple):
+							msg = email.message_from_string(response_part[1])
+							quoted_message += 'On %s, %s wrote:\r\n'% (msg['date'], msg['from'])
+							to = msg['from']
+							cc = msg['from']
+							subject = 'Re: %s' % (msg['subject'])
+							#subject = 'Fwd: %s' % (msg['subject'])
 							
-							for msg in msg_parts:
-								quoted_message += '> %s' % (msg.get_payload())
+							if msg.is_multipart():
+								msg_parts = [msg]
+								while msg_parts[0].is_multipart():
+									multi_payload = msg_parts[0].get_payload()
+									del msg_parts[0]
+									for part in multi_payload:
+										if part.is_multipart():
+											msg_parts.insert(0, part) #prepend
+										else:
+											msg_parts.append(part) 
 								
-						else:
-							quoted_message += '> %s' % (msg.get_payload())
-				imap.close()
-				imap.logout()
-
+								for msg in msg_parts:
+									quoted_message += '> %s' % (msg.get_payload())
+									
+							else:
+								quoted_message += '> %s' % (msg.get_payload())
+					imap.close()
+					imap.logout()
+				else:
+					HttpResponseRedirect("/") # back to main page
 			return render_to_response(
 				'compose.html',
 				{
@@ -143,7 +137,5 @@ def compose(request, action, folder=None, msg_num=None):
 				},
 				context_instance=RequestContext(request)
 			)
-		else:
-			HttpResponseRedirect("/") # back to main page
 	else:
 		HttpResponseRedirect("/") # back to main page
