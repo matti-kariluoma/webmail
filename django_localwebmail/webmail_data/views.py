@@ -130,11 +130,15 @@ def compose(request, action, folder=None, msg_num=None):
 				'compose.html',
 				{
 					'login_form': login_form,
-					'to': to,
-					'cc': cc,
-					'bcc': bcc,
-					'subject': subject,
-					'quoted_message': quoted_message
+					'compose_form': webmail_forms.ComposeForm(
+						initial={
+							'to': to,
+							'cc' : cc,
+							'bcc' : bcc,
+							'subject' : subject,
+							'message' : quoted_message
+						}
+					)
 				},
 				context_instance=RequestContext(request)
 			)
@@ -144,6 +148,7 @@ def compose(request, action, folder=None, msg_num=None):
 def send(request):
 	if request.method == 'POST':
 		login_form = webmail_forms.LoginForm(request.POST)
+		compose_form = webmail_forms.ComposeForm(request.POST)
 		if login_form.is_valid():
 			username = login_form.cleaned_data['name']
 			password = login_form.cleaned_data['password']
