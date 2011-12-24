@@ -19,7 +19,7 @@
 	{% for number, message_headers, message in mail %}
 	<tr>
 	<td><!-- select this --></td>
-	<td onclick="toggle_message('message_{{number}}')"><a href="#">{{ message_headers.Subject }}</a></td>
+	<td onclick="toggle_message('message_{{number}}')" style="text-color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
 	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.From }}</td>
 	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.Date }}</td>
 	</tr>
