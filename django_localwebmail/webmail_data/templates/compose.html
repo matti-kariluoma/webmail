@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="compose" style="padding: 2em;">
+<form>
+	{% csrf_token %}
+	{% for field in login_form %}
+	<div "display: none;">
+		{{ field.errors }}
+		{{ field.label_tag }}: {{ field }}
+	</div>
+	{% endfor %}
+	To: <input type="text" name="to" value="{{to}}" /><br />
+	CC: <input type="text" name="cc" value="{{cc}}" /><br />
+	BCC: <input type="text" name="bcc" value="{{bcc}}" /><br />
+	Subject: <input type="text" name="subject" value="{{subject}}" /><br />
+	Message: <textarea rows="40" cols="80">{{quoted_message}}</textarea>
+	<input type="submit" value="Send">
+</form>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}
+
+{% block jquery %}
+
+{% endblock %}

@@ -1,11 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
+<div style="display: none;">
+<style type="text/css">
+	form {
+		display: inline;
+		padding-left: 1em;
+	}
+	tr.message_body {
+		background-color: #fdc;
+	}
+	td.message {
+		border: 1px dotted black;
+		padding: 1em;
+	}
+	tr.message_actions {
+		background-color: #fdc;
+	}
+	td.actions {
+		border-bottom: 1px dotted black;
+		border-right: 1px dotted black;
+		border-left: 1px dotted black;
+	}
+	
+	td.fade_bg
+	{
+		background-color: #fff;
+	}
 
+</style>
+</div>
 <div class="mail" >
 <table border="0" style="width: 100%; background-color: #fff;">
 	<tr>
 	<td colspan="4">
-	<form action="/compose/new/">
+	<form action="/compose/new/" method="post">
+		{% csrf_token %}
+		{% for field in login_form %}
+		<div "display: none;">
+			{{ field.errors }}
+			{{ field.label_tag }}: {{ field }}
+		</div>
+		{% endfor %}
 		<input type="submit" value="Compose">
 	</form>
 	</td>
@@ -29,22 +64,43 @@
 	<td onclick="toggle_message('{{number}}')">{{ message_headers.From }}</td>
 	<td onclick="toggle_message('{{number}}')">{{ message_headers.Date }}</td>
 	</tr>
-	<tr id='message_{{number}}' class="message" style="background-color: #fdc;">
-	<td "background-color: #fff;"></td>
-	<td colspan='3' style="border: 1px dotted black; padding: 1em;">
+	<tr id='message_{{number}}' class="message_body" >
+	<td class="fade_bg"></td>
+	<td colspan='3' class="message">
 		<p>{{ message }}</p>
 	</td>
 	</tr>
-	<tr id='actions_{{number}}' class="message" style="background-color: #fdc;">
-	<td "background-color: #fff;"></td>
-	<td colspan='3' style="border-bottom: 1px dotted black; border-right: 1px dotted black; border-left: 1px dotted black;">
-		<form action="/compose/reply/{{number}}" style="display: inline; padding-left: 1em;">
+	<tr id='actions_{{number}}' class="message_actions" >
+	<td class="fade_bg"></td>
+	<td colspan='3' class="actions">
+		<form action="/compose/reply/{{folder}}/{{number}}" method="POST">
+			{% csrf_token %}
+			{% for field in login_form %}
+			<div "display: none;">
+				{{ field.errors }}
+				{{ field.label_tag }}: {{ field }}
+			</div>
+			{% endfor %}
 			<input type="submit" value="Reply">
 		</form>
-		<form action="/compose/reply_all/{{number}}" style="display: inline; padding-left: 1em;">
+		<form action="/compose/reply_all/{{folder}}/{{number}}" method="POST">
+			{% csrf_token %}
+			{% for field in login_form %}
+			<div "display: none;">
+				{{ field.errors }}
+				{{ field.label_tag }}: {{ field }}
+			</div>
+			{% endfor %}
 			<input type="submit" value="Reply All">
 		</form>
-		<form action="/compose/forward/{{number}}" style="display: inline; padding-left: 1em;">
+		<form action="/compose/forward/{{folder}}/{{number}}" method="POST">
+			{% csrf_token %}
+			{% for field in login_form %}
+			<div "display: none;">
+				{{ field.errors }}
+				{{ field.label_tag }}: {{ field }}
+			</div>
+			{% endfor %}
 			<input type="submit" value="Forward">
 		</form>
 	</td>

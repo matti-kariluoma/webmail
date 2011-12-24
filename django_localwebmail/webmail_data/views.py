@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django_localwebmail.webmail_data import webmail_forms
-import imaplib, smtplib
+import imaplib, smtplib, email
 import datetime
 import re
 
@@ -27,7 +27,7 @@ def mail(request, folder):
 
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			imap.select(folder)
+			imap.select(folder, readonly=True)
 			(typ, data) = imap.search(None, 'ALL')
 			for num in data[0].split():
 				(typ, data) = imap.fetch(num, '(RFC822)')
@@ -65,7 +65,81 @@ def mail(request, folder):
 			return render_to_response(
 				'mail.html',
 				{
+					'login_form': login_form,
 					'mail': sorted_mail,
+					'folder': folder,
+				},
+				context_instance=RequestContext(request)
+			)
+	else:
+		HttpResponseRedirect("/") # back to main page
+		
+def compose(request, action, folder=None, msg_num=None):
+	if request.method == 'POST':
+		login_form = webmail_forms.LoginForm(request.POST)
+		if login_form.is_valid():
+			username = login_form.cleaned_data['name']
+			password = login_form.cleaned_data['password']
+			
+			quoted_message = ''
+			to = ''
+			cc = ''
+			bcc = ''
+			subject = ''
+			
+			if action is not 'new':
+				if folder is None or msg_num is None:
+					return render_to_response(
+						'mail.html',
+						{
+							'login_form': login_form,
+							'mail': sorted_mail,
+							'folder': folder,
+						},
+						context_instance=RequestContext(request)
+					)
+
+				imap = imaplib.IMAP4() # localhost, port 143
+				imap.login(username, password)
+				imap.select(folder)
+				(typ, data) = imap.fetch(str(msg_num), '(RFC822)')
+				for response_part in data:
+					if isinstance(response_part, tuple):
+						msg = email.message_from_string(response_part[1])
+						quoted_message += 'On %s, %s wrote:\r\n'% (msg['date'], msg['from'])
+						to = msg['from']
+						cc = msg['from']
+						subject = 'Re: %s' % (msg['subject'])
+						#subject = 'Fwd: '
+						
+						if msg.is_multipart():
+							msg_parts = [msg]
+							while msg_parts[0].is_multipart():
+								multi_payload = msg_parts[0].get_payload()
+								del msg_parts[0]
+								for part in multi_payload:
+									if part.is_multipart():
+										msg_parts.insert(0, part) #prepend
+									else
+										msg_parts.append(part) 
+							
+							for msg in msg_parts:
+								quoted_message += '> %s' % (msg.get_payload())
+								
+						else:
+							quoted_message += '> %s' % (msg.get_payload())
+				imap.close()
+				imap.logout()
+
+			return render_to_response(
+				'compose.html',
+				{
+					'login_form': login_form,
+					'to': to,
+					'cc': cc,
+					'bcc': bcc,
+					'subject': subject,
+					'quoted_message': quoted_message
 				},
 				context_instance=RequestContext(request)
 			)
