@@ -41,14 +41,20 @@
 {% block javascript %}
 function toggle_message(id)
 {
-	if ($("#"+id).is(':visible'))
-	{
-		$("#"+id).hide();
-	}
-	else
-	{
-		$("#"+id).show();
-	}
+	hide = $("#"+id).is(':visible'); // if one is visible, hide all
+	
+	$("#"+id).each(
+		function() {
+			if (hide) 
+			{
+				$(this).hide();
+			}
+			else
+			{
+				$(this).show();
+			}
+		}
+	);
 }
 {% endblock %}
 
