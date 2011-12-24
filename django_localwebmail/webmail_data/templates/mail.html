@@ -23,18 +23,16 @@
 	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.From }}</td>
 	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.Date }}</td>
 	</tr>
-	<div id='message_{{number}}' class="message" style="background-color: #fdc; border: 1px dotted black;">
-	<tr>
-	<td colspan='4'>
+	<tr id='message_{{number}}' class="message" style="background-color: #fdc;">
+	<td colspan='4' style="border-top: 1px dotted black; border-right: 1px dotted black; border-left: 1px dotted black;">
 		<p>{{ message }}</p>
 	</td>
 	</tr>
-	<tr>
-	<td colspan='4'>
+	<tr id='message_{{number}}' class="message">
+	<td colspan='4' style="border-bottom: 1px dotted black; border-right: 1px dotted black; border-left: 1px dotted black;">
 		<a href="#">reply</a>
 	</td>
 	</tr>
-	</div>
 	{% endfor %}
 </table>
 </div>
