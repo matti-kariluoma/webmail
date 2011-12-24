@@ -2,7 +2,7 @@
 {% block content %}
 <div style="display: none;">
 <style type="text/css">
-	form {
+	form.compose {
 		display: inline;
 		padding-left: 1em;
 	}
@@ -32,86 +32,86 @@
 <div class="mail" >
 <table border="0" style="width: 100%; background-color: #fff;">
 	<tr>
-	<td colspan="4">
-	<form action="/compose/new/" method="post">
-		{% csrf_token %}
-		{% for field in login_form %}
-		<div "display: none;">
-			{{ field.errors }}
-			{{ field.label_tag }}: {{ field }}
-		</div>
-		{% endfor %}
-		<input type="submit" value="Compose">
-	</form>
-	</td>
+		<td colspan="4">
+		<form action="/compose/new/" method="post" class="compose">
+			{% csrf_token %}
+			{% for field in login_form %}
+			<div "display: none;">
+				{{ field.errors }}
+				{{ field.label_tag }}: {{ field }}
+			</div>
+			{% endfor %}
+			<input type="submit" value="Compose">
+		</form>
+		</td>
 	</tr>
 
 	<tr class="mail_headings" style="font-weight: bold;">
-	<td style="width: 1%;"><!-- select all checkbox --></td>
-	<td style="border-bottom: 1px solid black;">Subject</td>
-	<td style="width: 20%; border-bottom: 1px solid black;">From</td>
-	<td style="width: 20%; border-bottom: 1px solid black;">Date</td>
+		<td style="width: 1%;"><!-- select all checkbox --></td>
+		<td style="border-bottom: 1px solid black;">Subject</td>
+		<td style="width: 20%; border-bottom: 1px solid black;">From</td>
+		<td style="width: 20%; border-bottom: 1px solid black;">Date</td>
 	</tr>
 
 	{% for number, message_headers, message, raw_message in mail %}
 	<tr style="background-color: {% cycle '#cef' '#cdf' %};">
-	<td>
-	<form>
-		<input class="message_checkbox" id="checkbox_{{number}}" type="checkbox" name="{{ number }}" value="{{ number }}" onclick="unselect_variety({{element.1}})" />
-	</form>
-	</td>
-	<td onclick="toggle_message('{{number}}')" style="color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
-	<td onclick="toggle_message('{{number}}')">{{ message_headers.From }}</td>
-	<td onclick="toggle_message('{{number}}')">{{ message_headers.Date }}</td>
+		<td>
+		<form>
+			<input class="message_checkbox" id="checkbox_{{number}}" type="checkbox" name="{{ number }}" value="{{ number }}" onclick="unselect_variety({{element.1}})" />
+		</form>
+		</td>
+		<td onclick="toggle_message('{{number}}')" style="color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
+		<td onclick="toggle_message('{{number}}')">{{ message_headers.From }}</td>
+		<td onclick="toggle_message('{{number}}')">{{ message_headers.Date }}</td>
 	</tr>
 	<tr id='message_{{number}}' class="message_body" >
-	<td class="fade_bg"></td>
-	<td colspan='3' class="message">
-		<p>{{ message }}</p>
-	</td>
+		<td class="fade_bg"></td>
+		<td colspan='3' class="message">
+			<p>{{ message }}</p>
+		</td>
 	</tr>
 	<tr id='actions_{{number}}' class="message_actions" >
-	<td class="fade_bg"></td>
-	<td colspan='3' class="actions">
-		<form action="/compose/reply/{{folder}}/{{number}}" method="POST">
-			{% csrf_token %}
-			{% for field in login_form %}
-			<div "display: none;">
-				{{ field.errors }}
-				{{ field.label_tag }}: {{ field }}
-			</div>
-			{% endfor %}
-			<input type="submit" value="Reply">
-		</form>
-		<form action="/compose/reply_all/{{folder}}/{{number}}" method="POST">
-			{% csrf_token %}
-			{% for field in login_form %}
-			<div "display: none;">
-				{{ field.errors }}
-				{{ field.label_tag }}: {{ field }}
-			</div>
-			{% endfor %}
-			<input type="submit" value="Reply All">
-		</form>
-		<form action="/compose/forward/{{folder}}/{{number}}" method="POST">
-			{% csrf_token %}
-			{% for field in login_form %}
-			<div "display: none;">
-				{{ field.errors }}
-				{{ field.label_tag }}: {{ field }}
-			</div>
-			{% endfor %}
-			<input type="submit" value="Forward">
-		</form>
-	</td>
+		<td class="fade_bg"></td>
+		<td colspan='3' class="actions">
+			<form action="/compose/reply/{{folder}}/{{number}}" method="POST" class="compose">
+				{% csrf_token %}
+				{% for field in login_form %}
+				<div "display: none;">
+					{{ field.errors }}
+					{{ field.label_tag }}: {{ field }}
+				</div>
+				{% endfor %}
+				<input type="submit" value="Reply">
+			</form>
+			<form action="/compose/reply_all/{{folder}}/{{number}}" method="POST" class="compose">
+				{% csrf_token %}
+				{% for field in login_form %}
+				<div "display: none;">
+					{{ field.errors }}
+					{{ field.label_tag }}: {{ field }}
+				</div>
+				{% endfor %}
+				<input type="submit" value="Reply All">
+			</form>
+			<form action="/compose/forward/{{folder}}/{{number}}" method="POST" class="compose">
+				{% csrf_token %}
+				{% for field in login_form %}
+				<div "display: none;">
+					{{ field.errors }}
+					{{ field.label_tag }}: {{ field }}
+				</div>
+				{% endfor %}
+				<input type="submit" value="Forward">
+			</form>
+		</td>
 	</tr>
 	{% endfor %}
 	<tr>
-	<td colspan="4">	
-	<form>
-		<input type="submit" value="Delete Selected" onclick="delete_selected(); return false">
-	</form>
-	</td>
+		<td colspan="4">	
+		<form>
+			<input type="submit" value="Delete Selected" onclick="delete_selected(); return false">
+		</form>
+		</td>
 	</tr>
 </table>
 </div>
@@ -138,7 +138,12 @@ function delete_selected()
 {% endblock %}
 
 {% block jquery %}
-	$('.message').each(
+	$('.message_body').each(
+		function(){
+			$(this).hide();
+		}
+	);
+	$('.message_actions').each(
 		function(){
 			$(this).hide();
 		}
