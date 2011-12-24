@@ -149,10 +149,12 @@ def send(request):
 			password = login_form.cleaned_data['password']
 
 			mail = {}
+			
+			folder = 'INBOX'
 
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			imap.select('INBOX', readonly=True)
+			imap.select(folder, readonly=True)
 			(typ, data) = imap.search(None, 'ALL')
 			for num in data[0].split():
 				(typ, data) = imap.fetch(num, '(RFC822)')
