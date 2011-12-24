@@ -48,21 +48,17 @@ def mail(request, folder):
 						headers[line[0:pos_split]] = line[pos_split+1:len(line)]
 					else:
 						headers[line] = line
-				mail[num] = (headers,  message, data[0][1])
+				mail[int(num)] = (headers,  message, data[0][1])
 			imap.close()
 			imap.logout()
 
 			sorted_mail = [] # sort by date
-			max_num = 0
-			for i in mail.keys():
-				if int(i) > max_num:
-					max_num = int(i)
 					
-			mail_nums = range(max_num)
+			mail_nums = range(mail.keys())
 			mail_nums.sort(reverse=True)
 			for i in mail_nums:
 				try:
-					sorted_mail.append(mail[str(i)])
+					sorted_mail.append(i, mail[i].0, mail[i].1, mail[i].2)
 				except KeyError:
 					pass
 
