@@ -86,7 +86,8 @@ def compose(request, action, folder=None, msg_num=None):
 			if action is not 'new':
 				
 				if folder is None or msg_num is None:
-					return mail(request, folder)
+					return HttpResponseRedirect("/")
+					#return mail(request, folder)
 				
 				if login_form.is_valid():
 					username = login_form.cleaned_data['name']

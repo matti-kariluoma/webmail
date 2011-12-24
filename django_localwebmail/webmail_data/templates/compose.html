@@ -7,7 +7,7 @@
 	CC: <input type="text" name="cc" value="{{cc}}" /><br />
 	BCC: <input type="text" name="bcc" value="{{bcc}}" /><br />
 	Subject: <input type="text" name="subject" value="{{subject}}" /><br />
-	Message: <textarea rows="40" cols="80">{{quoted_message}}</textarea>
+	Message: <textarea rows="15" cols="80">{{quoted_message}}</textarea>
 	{% for field in login_form %}
 	<div>
 		{{ field.errors }}
