@@ -5,7 +5,7 @@
 	{% for error in error_list %}
 	<p style='color: red'>{{ error }}</p>
 	{% endfor %}
-	<form action="/mail/INBOX" method="post">
+	<form action="/mail/INBOX/" method="post">
 		{% csrf_token %}
 		{% for field in login_form %}
 		<div>

@@ -23,7 +23,7 @@ def mail(request, folder):
 			username = login_form.cleaned_data['name']
 			password = login_form.cleaned_data['password']
 
-			mail = []
+			mail = {}
 
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
@@ -48,15 +48,23 @@ def mail(request, folder):
 						headers[line[0:pos_split]] = line[pos_split+1:len(line)]
 					else:
 						headers[line] = line
-				mail.append((num, headers,  message, data[0][1]))
+				mail[num] = (headers,  message, data[0][1])
 			imap.close()
 			imap.logout()
 
+			sorted_mail = [] # sort by date
+			mail_nums = range(max(mail.keys()))
+			mail_nums.sort(reverse=True)
+			for i in mail_nums:
+				try:
+					sorted_mail.append(mail[i])
+				except KeyError:
+					pass
 
 			return render_to_response(
 				'mail.html',
 				{
-					'mail': mail,
+					'mail': sorted_mail,
 				},
 				context_instance=RequestContext(request)
 			)
