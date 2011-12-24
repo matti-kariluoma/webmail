@@ -19,5 +19,6 @@ urlpatterns = patterns('',
    url(r'^mail/(?P<folder>[a-zA-Z_]+)/$', 'webmail_data.views.mail'),
    url(r'^compose/(?P<action>[a-z_]+)/(?P<folder>[a-zA-Z_]+)/(?P<msg_num>[0123456789]+)/$', 'webmail_data.views.compose'),
    url(r'^compose/(?P<action>[a-z_]+)/$', 'webmail_data.views.compose')
+   url(r'^send/$', 'webmail_data.views.send')
    
 )
