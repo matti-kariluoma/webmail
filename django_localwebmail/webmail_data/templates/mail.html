@@ -19,16 +19,16 @@
 	{% for number, message_headers, message in mail %}
 	<tr style="background-color: {% cycle '#cef' '#cdf' %};">
 	<td><!-- select this --></td>
-	<td onclick="toggle_message('message_{{number}}')" style="color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
-	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.From }}</td>
-	<td onclick="toggle_message('message_{{number}}')">{{ message_headers.Date }}</td>
+	<td onclick="toggle_message('{{number}}')" style="color: blue; text-decoration: underline;">{{ message_headers.Subject }}</td>
+	<td onclick="toggle_message('{{number}}')">{{ message_headers.From }}</td>
+	<td onclick="toggle_message('{{number}}')">{{ message_headers.Date }}</td>
 	</tr>
 	<tr id='message_{{number}}' class="message" style="background-color: #fdc;">
 	<td colspan='4' style="border-top: 1px dotted black; border-right: 1px dotted black; border-left: 1px dotted black;">
 		<p>{{ message }}</p>
 	</td>
 	</tr>
-	<tr id='message_{{number}}' class="message">
+	<tr id='actions_{{number}}' class="message">
 	<td colspan='4' style="border-bottom: 1px dotted black; border-right: 1px dotted black; border-left: 1px dotted black;">
 		<a href="#">reply</a>
 	</td>
@@ -41,20 +41,16 @@
 {% block javascript %}
 function toggle_message(id)
 {
-	hide = $("#"+id).is(':visible'); // if one is visible, hide all
-	
-	$("#"+id).each(
-		function() {
-			if (hide) 
-			{
-				$(this).hide();
-			}
-			else
-			{
-				$(this).show();
-			}
-		}
-	);
+	if ($("#message_"+id).is(':visible')) // if one is visible, hide all
+	{
+		$("#message_"+id).hide();
+		$("#actions_"+id).hide();
+	}
+	else
+	{
+		$("#message_"+id).show();
+		$("#actions_"+id).show();
+	}
 }
 {% endblock %}
 
