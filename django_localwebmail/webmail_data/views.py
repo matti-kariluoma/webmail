@@ -81,11 +81,11 @@ def compose(request, action, folder=None, msg_num=None):
 			username = login_form.cleaned_data['name']
 			password = login_form.cleaned_data['password']
 			
-			quoted_message = ''
 			to = ''
 			cc = ''
 			bcc = ''
 			subject = ''
+			quoted_message = ''
 			
 			if action is not 'new':
 				if folder is None or msg_num is None:
@@ -110,7 +110,7 @@ def compose(request, action, folder=None, msg_num=None):
 						to = msg['from']
 						cc = msg['from']
 						subject = 'Re: %s' % (msg['subject'])
-						#subject = 'Fwd: '
+						#subject = 'Fwd: %s' % (msg['subject'])
 						
 						if msg.is_multipart():
 							msg_parts = [msg]
@@ -143,5 +143,7 @@ def compose(request, action, folder=None, msg_num=None):
 				},
 				context_instance=RequestContext(request)
 			)
+		else:
+			HttpResponseRedirect("/") # back to main page
 	else:
 		HttpResponseRedirect("/") # back to main page

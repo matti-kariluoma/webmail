@@ -76,7 +76,7 @@
 			<form action="/compose/reply/{{folder}}/{{number}}/" method="POST" class="compose">
 				{% csrf_token %}
 				{% for field in login_form %}
-				<div style="display: none;">
+				<div>
 					{{ field.errors }}
 					{{ field.label_tag }}: {{ field }}
 				</div>
@@ -86,7 +86,7 @@
 			<form action="/compose/reply_all/{{folder}}/{{number}}/" method="POST" class="compose">
 				{% csrf_token %}
 				{% for field in login_form %}
-				<div style="display: none;">
+				<div>
 					{{ field.errors }}
 					{{ field.label_tag }}: {{ field }}
 				</div>
@@ -96,7 +96,7 @@
 			<form action="/compose/forward/{{folder}}/{{number}}/" method="POST" class="compose">
 				{% csrf_token %}
 				{% for field in login_form %}
-				<div style="display: none;">
+				<div>
 					{{ field.errors }}
 					{{ field.label_tag }}: {{ field }}
 				</div>
