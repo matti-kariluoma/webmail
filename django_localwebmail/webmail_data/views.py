@@ -58,7 +58,7 @@ def mail(request, folder):
 			mail_nums.sort(reverse=True)
 			for i in mail_nums:
 				try:
-					sorted_mail.append((i, mail[i].0, mail[i].1, mail[i].2))
+					sorted_mail.append((i, mail[i][0], mail[i][1], mail[i][2]))
 				except KeyError:
 					pass
 
