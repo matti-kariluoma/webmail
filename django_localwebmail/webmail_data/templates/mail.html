@@ -36,7 +36,7 @@
 		<form action="/compose/new/" method="post" class="compose">
 			{% csrf_token %}
 			{% for field in login_form %}
-			<div "display: none;">
+			<div style="display: none;">
 				{{ field.errors }}
 				{{ field.label_tag }}: {{ field }}
 			</div>
@@ -73,30 +73,30 @@
 	<tr id='actions_{{number}}' class="message_actions" >
 		<td class="fade_bg"></td>
 		<td colspan='3' class="actions">
-			<form action="/compose/reply/{{folder}}/{{number}}" method="POST" class="compose">
+			<form action="/compose/reply/{{folder}}/{{number}}/" method="POST" class="compose">
 				{% csrf_token %}
 				{% for field in login_form %}
-				<div "display: none;">
+				<div style="display: none;">
 					{{ field.errors }}
 					{{ field.label_tag }}: {{ field }}
 				</div>
 				{% endfor %}
 				<input type="submit" value="Reply">
 			</form>
-			<form action="/compose/reply_all/{{folder}}/{{number}}" method="POST" class="compose">
+			<form action="/compose/reply_all/{{folder}}/{{number}}/" method="POST" class="compose">
 				{% csrf_token %}
 				{% for field in login_form %}
-				<div "display: none;">
+				<div style="display: none;">
 					{{ field.errors }}
 					{{ field.label_tag }}: {{ field }}
 				</div>
 				{% endfor %}
 				<input type="submit" value="Reply All">
 			</form>
-			<form action="/compose/forward/{{folder}}/{{number}}" method="POST" class="compose">
+			<form action="/compose/forward/{{folder}}/{{number}}/" method="POST" class="compose">
 				{% csrf_token %}
 				{% for field in login_form %}
-				<div "display: none;">
+				<div style="display: none;">
 					{{ field.errors }}
 					{{ field.label_tag }}: {{ field }}
 				</div>
