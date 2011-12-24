@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="login_form" >
+	{% for error in error_list %}
+	<p style='color: red'>{{ error }}</p>
+	{% endfor %}
+	<form action="/mail/" method="post">
+		{% csrf_token %}
+		{% for field in login_form %}
+		<div>
+			{{ field.errors }}
+			{{ field.label_tag }}: {{ field }}
+		</div>
+		{% endfor %}
+		<input type="submit" value="Submit" />
+	</form>
+</div>
+{% endblock %}
