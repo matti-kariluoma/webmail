@@ -23,44 +23,13 @@ def mail(request, folder):
 			username = login_form.cleaned_data['name']
 			password = login_form.cleaned_data['password']
 
-			mail = {}
-
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			imap.select(folder, readonly=True)
-			(typ, data) = imap.search(None, 'ALL')
-			for num in data[0].split():
-				(typ, data) = imap.fetch(num, '(RFC822)')
-				header_end = data[0][1].find('\r\n\r\n')
-				message = ''
-				raw_headers = []
-				if header_end > 0:
-					message = data[0][1][header_end+4:len(data[0][1])]
-					raw_headers = data[0][1][0:header_end].split('\r\n')
-				else:
-					message = data[0][1]
-					raw_headers = data[0][1].split('\r\n')
 
-				headers = {}
-				for line in raw_headers:
-					pos_split = line.find(':')
-					if pos_split > 0:
-						headers[line[0:pos_split]] = line[pos_split+1:len(line)]
-					else:
-						headers[line] = line
-				mail[int(num)] = (headers,  message, data[0][1])
+			sorted_mail = get_mail(imap, folder)
+
 			imap.close()
 			imap.logout()
-
-			sorted_mail = [] # sort by date
-					
-			mail_nums = range(max(mail.keys())+1)
-			mail_nums.sort(reverse=True)
-			for i in mail_nums:
-				try:
-					sorted_mail.append((i, mail[i][0], mail[i][1], mail[i][2]))
-				except KeyError:
-					pass
 
 			return render_to_response(
 				'mail.html',
@@ -83,7 +52,7 @@ def compose(request, action, folder=None, msg_num=None):
 			quoted_message = ''
 			login_form = webmail_forms.LoginForm(request.POST)
 			
-			if action is not 'new':
+			if action != 'new':
 				
 				if folder is None or msg_num is None:
 					return HttpResponseRedirect("/")
@@ -153,47 +122,48 @@ def send(request):
 			username = login_form.cleaned_data['name']
 			password = login_form.cleaned_data['password']
 
-			mail = {}
+			from_addr = "%s@kariluo.ma" % (username)
+			to_addr = compose_form.cleaned_data['to'].split(",")
 			
-			folder = 'INBOX'
-
+			new_message = email.message.Message()
+			new_message.set_unixfrom(username)
+			new_message['Subject'] = compose_form.cleaned_data['subject']
+			new_message['From'] = from_addr
+			new_message['To'] = compose_form.cleaned_data['to']
+			new_message.set_payload(compose_form.cleaned_data['message'])
+			
+			s = smtplib.SMTP('localhost')
+			mail_sent = True
+			try:
+				refused_recipients_dict = s.sendmail(from_addr, to_addr, new_message.as_string())
+			except:
+				mail_sent = False
+			finally:
+				s.quit()
+			
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			imap.select(folder, readonly=True)
-			(typ, data) = imap.search(None, 'ALL')
-			for num in data[0].split():
-				(typ, data) = imap.fetch(num, '(RFC822)')
-				header_end = data[0][1].find('\r\n\r\n')
-				message = ''
-				raw_headers = []
-				if header_end > 0:
-					message = data[0][1][header_end+4:len(data[0][1])]
-					raw_headers = data[0][1][0:header_end].split('\r\n')
-				else:
-					message = data[0][1]
-					raw_headers = data[0][1].split('\r\n')
-
-				headers = {}
-				for line in raw_headers:
-					pos_split = line.find(':')
-					if pos_split > 0:
-						headers[line[0:pos_split]] = line[pos_split+1:len(line)]
-					else:
-						headers[line] = line
-				mail[int(num)] = (headers,  message, data[0][1])
+			
+			if mail_sent: # copy to sent if sent
+				# switch to sent
+				folder = 'SENT'
+				(typ, data) = imap.select(folder)
+				
+				if (typ != 'OK'):
+					imap.create(folder)  # create a sent folder
+					(typ, data) = imap.select(folder) 
+					
+				# write to folder
+				imap.append(folder, '', imaplib.Time2Internaldate(time.time()), str(new_message))
+						
+			# switch to inbox? or to sent? last viewed?
+			folder = 'INBOX'
+			
+			sorted_mail = get_mail(imap, folder)
+			
 			imap.close()
 			imap.logout()
-
-			sorted_mail = [] # sort by date
-					
-			mail_nums = range(max(mail.keys())+1)
-			mail_nums.sort(reverse=True)
-			for i in mail_nums:
-				try:
-					sorted_mail.append((i, mail[i][0], mail[i][1], mail[i][2]))
-				except KeyError:
-					pass
-
+			
 			return render_to_response(
 				'mail.html',
 				{
@@ -206,3 +176,47 @@ def send(request):
 	else:
 		HttpResponseRedirect("/") # back to main page
 		
+def get_mail(imap, folder):
+	"""
+	imap is an imap instance, already logged in.
+	folder is the imap folder you like to get mail from.
+	
+	returns a sorted list of tuples: (int(message_num), headers_dict, str(message_body), str(raw_message))
+	the list is reverse sorted by message_num
+	"""
+	mail = {}
+
+	imap.select(folder, readonly=True)
+	(typ, data) = imap.search(None, 'ALL')
+	for num in data[0].split():
+		(typ, data) = imap.fetch(num, '(RFC822)')
+		header_end = data[0][1].find('\r\n\r\n')
+		message = ''
+		raw_headers = []
+		if header_end > 0:
+			message = data[0][1][header_end+4:len(data[0][1])]
+			raw_headers = data[0][1][0:header_end].split('\r\n')
+		else:
+			message = data[0][1]
+			raw_headers = data[0][1].split('\r\n')
+
+		headers = {}
+		for line in raw_headers:
+			pos_split = line.find(':')
+			if pos_split > 0:
+				headers[line[0:pos_split]] = line[pos_split+1:len(line)]
+			else:
+				headers[line] = line
+		mail[int(num)] = (headers,  message, data[0][1])
+
+	sorted_mail = [] # sort by date
+			
+	mail_nums = range(max(mail.keys())+1)
+	mail_nums.sort(reverse=True)
+	for i in mail_nums:
+		try:
+			sorted_mail.append((i, mail[i][0], mail[i][1], mail[i][2]))
+		except KeyError:
+			pass
+
+	return sorted_mail
