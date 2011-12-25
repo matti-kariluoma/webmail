@@ -124,7 +124,7 @@ def send(request):
 			
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			
+			refused_recipients_dict = {}
 			if compose_form.is_valid():
 				from_addr = "%s@kariluo.ma" % (username)
 				to_addr = compose_form.cleaned_data['to'].split(",")
@@ -172,6 +172,7 @@ def send(request):
 					'login_form': login_form,
 					'mail': sorted_mail,
 					'folder': folder,
+					'info': refused_recipients_dict
 				},
 				context_instance=RequestContext(request)
 			)
