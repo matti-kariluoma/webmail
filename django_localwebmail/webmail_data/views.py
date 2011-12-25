@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django_localwebmail.webmail_data import webmail_forms
 import imaplib, smtplib, email
-import datetime
+import datetime, time
 import re
 
 def login(request):
