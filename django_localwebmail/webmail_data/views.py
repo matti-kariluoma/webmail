@@ -130,6 +130,8 @@ def send(request):
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
 			
+			mail_sent = False
+			
 			if compose_form.is_valid():
 				from_addr = "%s@kariluo.ma" % (username)
 				to_addr = compose_form.cleaned_data['to'].split(",")
@@ -175,12 +177,18 @@ def send(request):
 			imap.close()
 			imap.logout()
 			
+			if mail_sent:
+				mail_sent_message = 'Mail sent successfully!'
+			else:
+				mail_sent_message = 'There was a problem sending your email...'
+			
 			return render_to_response(
 				'mail.html',
 				{
 					'login_form': login_form,
 					'mail': sorted_mail,
-					'folder': folder
+					'folder': folder,
+					'mail_sent' = mail_sent_message
 				},
 				context_instance=RequestContext(request)
 			)
