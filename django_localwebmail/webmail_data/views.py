@@ -121,41 +121,43 @@ def send(request):
 		if login_form.is_valid():
 			username = login_form.cleaned_data['name']
 			password = login_form.cleaned_data['password']
-
-			from_addr = "%s@kariluo.ma" % (username)
-			to_addr = compose_form.cleaned_data['to'].split(",")
-			
-			new_message = email.message.Message()
-			new_message.set_unixfrom(username)
-			new_message['Subject'] = compose_form.cleaned_data['subject']
-			new_message['From'] = from_addr
-			new_message['To'] = compose_form.cleaned_data['to']
-			new_message.set_payload(compose_form.cleaned_data['message'])
-			
-			s = smtplib.SMTP('localhost')
-			mail_sent = True
-			try:
-				refused_recipients_dict = s.sendmail(from_addr, to_addr, new_message.as_string())
-			except:
-				mail_sent = False
-			finally:
-				s.quit()
 			
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
 			
-			if mail_sent: # copy to sent if sent
-				# switch to sent
-				folder = 'SENT'
-				(typ, data) = imap.select(folder)
+			if compose_form.is_valid():
+				from_addr = "%s@kariluo.ma" % (username)
+				to_addr = compose_form.cleaned_data['to'].split(",")
 				
-				if (typ != 'OK'):
-					imap.create(folder)  # create a sent folder
-					(typ, data) = imap.select(folder) 
+				new_message = email.message.Message()
+				new_message.set_unixfrom(username)
+				new_message['Subject'] = compose_form.cleaned_data['subject']
+				new_message['From'] = from_addr
+				new_message['To'] = compose_form.cleaned_data['to']
+				new_message.set_payload(compose_form.cleaned_data['message'])
+				
+				s = smtplib.SMTP('localhost')
+				mail_sent = True
+				try:
+					refused_recipients_dict = s.sendmail(from_addr, to_addr, new_message.as_string())
+				except:
+					mail_sent = False
+				finally:
+					s.quit()
+				
+				if mail_sent: # copy to sent if sent
+					# switch to sent
+					folder = 'SENT'
+					(typ, data) = imap.select(folder)
 					
-				# write to folder
-				imap.append(folder, '', imaplib.Time2Internaldate(time.time()), str(new_message))
+					if (typ != 'OK'):
+						imap.create(folder)  # create a sent folder
+						(typ, data) = imap.select(folder) 
 						
+					# write to folder
+					imap.append(folder, '', imaplib.Time2Internaldate(time.time()), str(new_message))
+			else:
+				show_error = True	
 			# switch to inbox? or to sent? last viewed?
 			folder = 'INBOX'
 			
