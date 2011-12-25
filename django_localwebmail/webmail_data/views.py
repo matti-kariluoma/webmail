@@ -212,13 +212,14 @@ def get_mail(imap, folder):
 		mail[int(num)] = (headers,  message, data[0][1])
 
 	sorted_mail = [] # sort by date
-			
-	mail_nums = range(max(mail.keys())+1)
-	mail_nums.sort(reverse=True)
-	for i in mail_nums:
-		try:
-			sorted_mail.append((i, mail[i][0], mail[i][1], mail[i][2]))
-		except KeyError:
-			pass
+	
+	if len(mail.keys()) > 0:
+		mail_nums = range(max(mail.keys())+1)
+		mail_nums.sort(reverse=True)
+		for i in mail_nums:
+			try:
+				sorted_mail.append((i, mail[i][0], mail[i][1], mail[i][2]))
+			except KeyError:
+				pass
 
 	return sorted_mail
