@@ -45,11 +45,6 @@
 		</form>
 		</td>
 	</tr>
-	<tr>
-		<td colspan="4">
-		{{refused_recipients_dict}}
-		</td>
-	</tr>
 
 	<tr class="mail_headings" style="font-weight: bold;">
 		<td style="width: 1%;"><!-- select all checkbox --></td>
@@ -72,7 +67,7 @@
 	<tr id='message_{{number}}' class="message_body" >
 		<td class="fade_bg"></td>
 		<td colspan='3' class="message">
-			<p>{{ message }}</p>
+			<pre>{{ message }}</pre>
 		</td>
 	</tr>
 	<tr id='actions_{{number}}' class="message_actions" >

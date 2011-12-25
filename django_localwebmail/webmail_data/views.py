@@ -70,6 +70,8 @@ def compose(request, action, folder=None, msg_num=None):
 						if isinstance(response_part, tuple):
 							msg = email.message_from_string(response_part[1])
 							quoted_message += 'On %s, %s wrote:\r\n'% (msg['date'], msg['from'])
+							raw_message = ''
+							
 							to = msg['from']
 							#cc = msg['from']
 							subject = 'Re: %s' % (msg['subject'])
@@ -87,10 +89,13 @@ def compose(request, action, folder=None, msg_num=None):
 											msg_parts.append(part) 
 								
 								for msg in msg_parts:
-									quoted_message += '> %s' % (msg.get_payload())
+									raw_message += msg.get_payload()
 									
 							else:
-								quoted_message += '> %s' % (msg.get_payload())
+								raw_message += msg.get_payload()
+							
+							for line in raw_message.split('\r\n'):
+								quoted_message += ">%s\r\n" % (line)
 					imap.close()
 					imap.logout()
 				else:
@@ -124,7 +129,7 @@ def send(request):
 			
 			imap = imaplib.IMAP4() # localhost, port 143
 			imap.login(username, password)
-			refused_recipients_dict = {}
+			
 			if compose_form.is_valid():
 				from_addr = "%s@kariluo.ma" % (username)
 				to_addr = compose_form.cleaned_data['to'].split(",")
@@ -175,8 +180,7 @@ def send(request):
 				{
 					'login_form': login_form,
 					'mail': sorted_mail,
-					'folder': folder,
-					'info': refused_recipients_dict
+					'folder': folder
 				},
 				context_instance=RequestContext(request)
 			)
