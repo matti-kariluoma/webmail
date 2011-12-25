@@ -6,8 +6,8 @@ class LoginForm(forms.Form):
 
 class ComposeForm(forms.Form):
 	to = forms.CharField(widget=forms.TextInput(attrs={'size':'80'}))
-	cc = forms.CharField(widget=forms.TextInput(attrs={'size':'80'}))
-	bcc = forms.CharField(widget=forms.TextInput(attrs={'size':'80'}))
-	subject = forms.CharField(widget=forms.TextInput(attrs={'size':'80'}))
+	cc = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':'80'}))
+	bcc = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':'80'}))
+	subject = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':'80'}))
 	message = forms.CharField(widget=forms.widgets.Textarea(attrs={'cols':'80', 'rows':'15'}))
 	

@@ -128,10 +128,14 @@ def send(request):
 			if compose_form.is_valid():
 				from_addr = "%s@kariluo.ma" % (username)
 				to_addr = compose_form.cleaned_data['to'].split(",")
+				subject = compose_form.cleaned_data['subject']
+				
+				if subject is None or subject == '':
+					subject = "No Subject"
 				
 				new_message = email.message.Message()
 				new_message.set_unixfrom(username)
-				new_message['Subject'] = compose_form.cleaned_data['subject']
+				new_message['Subject'] = subject
 				new_message['From'] = from_addr
 				new_message['To'] = compose_form.cleaned_data['to']
 				new_message.set_payload(compose_form.cleaned_data['message'])
