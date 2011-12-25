@@ -12,10 +12,26 @@ def login(request):
 		'main.html', 
 		{ 
 			'login_form': login_form,
+			'folder' : 'INBOX'
 		},
 		context_instance=RequestContext(request)
 	)
 
+def login(request, folder)
+	
+	if request.method == 'POST':
+		login_form = webmail_forms.LoginForm(request.POST)
+	else:
+		login_form = webmail_forms.LoginForm()
+	
+	return render_to_response(
+		'main.html', 
+		{ 
+			'login_form': login_form,
+			'folder': folder
+		},
+		context_instance=RequestContext(request)
+	)
 def mail(request, folder):
 	if request.method == 'POST':
 		login_form = webmail_forms.LoginForm(request.POST)

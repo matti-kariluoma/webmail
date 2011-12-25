@@ -32,12 +32,14 @@
 <div class="mail" >
 <table border="0" style="width: 100%; background-color: #fff;">
 	<tr>
+		<td class="fade_bg"></td>
 		<td colspan="4">
 		<h3>{{mail_sent_message}}</h3>
 		</td>
 	</tr>
 	
 	<tr>
+		<td class="fade_bg"></td>
 		<td colspan="4">
 		<form action="/compose/new/" method="post" class="compose">
 			{% csrf_token %}
@@ -53,6 +55,7 @@
 	</tr>
 
 	<tr class="mail_headings" style="font-weight: bold;">
+		<td class="fade_bg" rowspan="{{num_folder}}"></td>
 		<td style="width: 1%;"><!-- select all checkbox --></td>
 		<td style="border-bottom: 1px solid black;">Subject</td>
 		<td style="width: 20%; border-bottom: 1px solid black;">From</td>
@@ -61,6 +64,7 @@
 
 	{% for number, message_headers, message, raw_message in mail %}
 	<tr style="background-color: {% cycle '#cef' '#cdf' %};">
+		<td class="fade_bg"></td>
 		<td>
 		<form>
 			<input class="message_checkbox" id="checkbox_{{number}}" type="checkbox" name="{{ number }}" value="{{ number }}" onclick="unselect_variety({{element.1}})" />
@@ -77,6 +81,7 @@
 		</td>
 	</tr>
 	<tr id='actions_{{number}}' class="message_actions" >
+		<td class="fade_bg"></td>
 		<td class="fade_bg"></td>
 		<td colspan='3' class="actions">
 			<form action="/compose/reply/{{folder}}/{{number}}/" method="POST" class="compose">
@@ -113,6 +118,7 @@
 	</tr>
 	{% endfor %}
 	<tr>
+		<td class="fade_bg"></td>
 		<td colspan="4">	
 		<form>
 			<input type="submit" value="Delete Selected" onclick="delete_selected(); return false">
